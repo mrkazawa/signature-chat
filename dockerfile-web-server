@@ -1,0 +1,7 @@
+FROM node:18.16.1-alpine3.18
+
+# make work directory
+WORKDIR /app/src
+
+# hack to make container always alive
+CMD tail -F anything
