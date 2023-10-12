@@ -25,7 +25,7 @@ console.log("Private Key:", privateKey);
 console.log("Public Key:", publicKey);
 console.log("Signature:", signature.toString("hex"));
 
-// public key, message, and signature is transmitted to recipients
+// public key, message, and signature are transmitted to recipients
 // then...
 
 // recipients verify signature

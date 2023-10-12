@@ -11,7 +11,7 @@ console.log("Message:", message);
 console.log("Key:", key.export().toString("hex"));
 console.log("Signature:", signature);
 
-// key, message, and signature is transmitted to recipients
+// key, message, and signature are transmitted to recipients
 // then...
 
 // recipients verify signature

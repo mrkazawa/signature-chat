@@ -2,43 +2,49 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 
-// Constants
 const PORT = 8080;
-const HOST = '0.0.0.0';
 
-// App
 const app = express();
-app.engine('html', require('ejs').renderFile);
-app.set('view engine', 'html');
-app.set('views', __dirname);
+app.use(bodyParser.json());
+const httpServer = createServer(app);
+const io = new Server(httpServer);
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'));
+//--------------- Socket Start ---------------//
 
-var balance = 1000;
+io.on("connection", (socket) => {
+  console.log(`user ${socket.id} is connected`);
 
-app.get('/', (req, res) => {
-  const bookData = {
-    isbn: "0-13-239077-9",
-    quantity: "1",
-    unitprice: "111.00"
-  };
-  res.render('index', {
-    balance: balance,
-    bookData: bookData
+  socket.on("disconnect", () => {
+    console.log(`user ${socket.id} is disconnected`);
+  });
+
+  socket.on("broadcast", (data) => {
+    socket.broadcast.emit("broadcast", data);
   });
 });
 
-app.post('/confirm', function (req, res) {
-  balance = balance - req.body.unitprice;
-  res.redirect("/");
+//--------------- Socket End ---------------//
+//--------------- REST API Start ---------------//
+
+app.get("/download", (req, res) => {
+  const data = {
+    publicKey: "server-public-key",
+    algorithm: "ecdsa",
+    hash: "hash-of-server-public-key"
+  };
+  res.send(JSON.stringify(data));
 });
 
-// add endpoint to download server public key
-// add endpoint to register user
-// add endpoint to send chat message
+app.post("/register", function (req, res) {
+  console.log(`received user registration from (${req.body.username}, ${req.body.publicKey})`);
+  res.send("successfully registered");
+});
 
-app.listen(PORT, HOST, () => {
-  console.log(`Running on http://${HOST}:${PORT}`);
+//--------------- REST API End ---------------//
+
+httpServer.listen(PORT, () => {
+  console.log(`listening on *:${PORT}`);
 });
