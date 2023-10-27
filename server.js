@@ -29,11 +29,12 @@ io.on("connection", (socket) => {
 //--------------- Socket End ---------------//
 //--------------- REST API Start ---------------//
 
-app.get("/download", (req, res) => {
+app.get("/download/:username", (req, res) => {
   const data = {
-    publicKey: "server-public-key",
-    algorithm: "ecdsa",
-    hash: "hash-of-server-public-key"
+    username: req.params.username,
+    publicKey: "username-public-key",
+    algorithm: "ecdsa", // signature algorithm to use
+    hash: "sha256" // hash algorithm to use in signature
   };
   res.send(JSON.stringify(data));
 });
