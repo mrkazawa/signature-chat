@@ -9,19 +9,9 @@ let username, privateKey, publicKey;
 
 //--------------- Socket Event Start ---------------//
 
-socket.on("connect", () => {
+socket.on("connect", async () => {
   console.log("Connected with id:", socket.id);
-});
-socket.on("disconnect", () => {
-  console.log("Disconnected!");
-});
-socket.on("broadcast", (data) => {
-  console.log(`${data.sender}: ${data.msg}`);
-});
 
-//--------------- Socket Event End ---------------//
-
-async function main() {
   username = "alice";
   publicKey = "alice-public-key";
 
@@ -31,20 +21,29 @@ async function main() {
   // we assume that Alice want to communicate with Bob
   const bobData = await downloadPublicKey("bob");
   console.log(bobData);
+});
 
-  // triggered on end-of-line input (\n, \r, or \r\n)
-  rl.on("line", (input) => {
-    const data = {
-      "sender": username,
-      "msg": input
-    };
-    socket.emit("broadcast", data);
-  });
+socket.on("disconnect", () => {
+  console.log("Disconnected!");
+  process.exit(0);
+});
 
-  // triggered on CTRL+C like command
-  rl.on('SIGINT', () => {
-    process.exit(0);
-  });
-}
+socket.on("chat", (data) => {
+  console.log(`${data.sender}: ${data.msg}`);
+});
 
-main();
+//--------------- Socket Event End ---------------//
+
+// triggered on end-of-line input (\n, \r, or \r\n)
+rl.on("line", (input) => {
+  const data = {
+    "sender": username,
+    "msg": input
+  };
+  socket.emit("chat", data);
+});
+
+// triggered on CTRL+C like command
+rl.on('SIGINT', () => {
+  process.exit(0);
+});

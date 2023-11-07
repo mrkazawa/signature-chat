@@ -12,6 +12,8 @@ app.use(bodyParser.json());
 const httpServer = createServer(app);
 const io = new Server(httpServer);
 
+const users = new Map(); // key-value in-memory store
+
 //--------------- Socket Start ---------------//
 
 io.on("connection", (socket) => {
@@ -21,8 +23,8 @@ io.on("connection", (socket) => {
     console.log(`user ${socket.id} is disconnected`);
   });
 
-  socket.on("broadcast", (data) => {
-    socket.broadcast.emit("broadcast", data);
+  socket.on("chat", (data) => {
+    socket.broadcast.emit("chat", data);
   });
 });
 
